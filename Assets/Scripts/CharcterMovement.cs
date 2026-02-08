@@ -16,6 +16,8 @@ public class CharcterMovement : MonoBehaviour
     public StaminaBar staminaBar;
     public float maxStamina = 100;
     public float currentStamina;
+
+    public SoundBar soundBar;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -51,15 +53,26 @@ public class CharcterMovement : MonoBehaviour
         }
         
         Vector3 coreMovement = movement * (_moveSpeed * Time.deltaTime);
+
+        if (movement.x == 0 && movement.z == 0)
+        {
+            soundBar.SetSoundLevel(0);
+        }
+        else
+        {
+            soundBar.SetSoundLevel(2);
+        }
         
         if (_sprintAction.inProgress && currentStamina > 0)
         {
             coreMovement *= _sprintSpeedBuff;
             ReduceStamina(.2f);
+            soundBar.SetSoundLevel(4);
         } else if (_crouchAction.inProgress && currentStamina > 0)
         {
             coreMovement *= _crouchSpeedDebuff;
             ReduceStamina(.1f);
+            soundBar.SetSoundLevel(1);
         }
         else if (currentStamina < maxStamina) // not expending stamina
         {
