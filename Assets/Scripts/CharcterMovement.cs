@@ -13,6 +13,10 @@ public class CharcterMovement : MonoBehaviour
     private readonly float gravity = -9.81f;
     private readonly float _downwardForce = -2f; // A small constant downward force
     
+    public StaminaBar staminaBar;
+    public float maxStamina = 100;
+    public float currentStamina;
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -20,6 +24,8 @@ public class CharcterMovement : MonoBehaviour
         _crouchAction = InputSystem.actions.FindAction("Crouch");
         _sprintAction = InputSystem.actions.FindAction("Sprint");
         _characterController = GetComponent<CharacterController>();
+        currentStamina = maxStamina;
+        staminaBar.SetMaxStamina(maxStamina);
     }
 
     // Update is called once per frame
@@ -28,7 +34,6 @@ public class CharcterMovement : MonoBehaviour
 
         Vector2 moveInput = _moveAction.ReadValue<Vector2>();
         Vector3 movement = new Vector3(moveInput.x, 0.0f, moveInput.y);
-
         
         if (_characterController.isGrounded)
         {
@@ -47,15 +52,34 @@ public class CharcterMovement : MonoBehaviour
         
         Vector3 coreMovement = movement * (_moveSpeed * Time.deltaTime);
         
-        if (_sprintAction.inProgress)
+        if (_sprintAction.inProgress && currentStamina > 0)
         {
             coreMovement *= _sprintSpeedBuff;
-        } else if (_crouchAction.inProgress)
+            ReduceStamina(.2f);
+        } else if (_crouchAction.inProgress && currentStamina > 0)
         {
             coreMovement *= _crouchSpeedDebuff;
+            ReduceStamina(.1f);
+        }
+        else if (currentStamina < maxStamina) // not expending stamina
+        {
+            RecoverStamina(.1f);
         }
         
         _characterController.Move(coreMovement);
         
     }
+    
+    void ReduceStamina(float stamina)
+    {
+        currentStamina -= stamina;
+        staminaBar.SetStamina(currentStamina);
+    }    
+    
+    void RecoverStamina(float stamina)
+    {
+        currentStamina += stamina;
+        staminaBar.SetStamina(currentStamina);
+    }
+    
 }
