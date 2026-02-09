@@ -35,7 +35,7 @@ public class CharcterMovement : MonoBehaviour
     {
 
         Vector2 moveInput = _moveAction.ReadValue<Vector2>();
-        Vector3 movement = new Vector3(moveInput.x, 0.0f, moveInput.y);
+        Vector3 movement = new Vector3(-moveInput.x, 0.0f, -moveInput.y);
         
         if (_characterController.isGrounded)
         {
